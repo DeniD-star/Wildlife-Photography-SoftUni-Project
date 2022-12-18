@@ -1,9 +1,10 @@
 const User = require('../models/User');
 
-async function createUser(email, username, hashedPassword){
+async function createUser(firstName, lastName, email, hashedPassword){
     const user = new User({
+        firstName,
+        lastName,
         email,
-        username,
         hashedPassword
     })
 
@@ -12,11 +13,11 @@ async function createUser(email, username, hashedPassword){
     return user;
 }
 
-async function getUserByUsername(username){
-    const pattern = new RegExp(`^${username}$`, 'i')
-    const user = await User.findOne({username: {$regex: pattern}});
-    return user;
-}
+// async function getUserByUsername(username){
+//     const pattern = new RegExp(`^${username}$`, 'i')
+//     const user = await User.findOne({username: {$regex: pattern}});
+//     return user;
+// }
 async function getUserByEmail(email){
     const pattern = new RegExp(`^${email}$`, 'i')
     const user = await User.findOne({email: {$regex: pattern}});
@@ -25,6 +26,6 @@ async function getUserByEmail(email){
 
 module.exports = {
     createUser,
-    getUserByUsername,
+    // getUserByUsername,
     getUserByEmail
 }

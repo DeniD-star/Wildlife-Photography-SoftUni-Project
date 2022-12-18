@@ -8,9 +8,10 @@ router.get('/register', isGuest(), (req, res) => {
 })
 
 router.post('/register',
+body('firstName', 'First name is required!').isLength({ min: 3 }).withMessage('First name must be at least 3 characters long!'),
+body('lastName', 'Last name is required!').isLength({ min: 5 }).withMessage('Last name must be at least 5 characters long!'),
 body('email', 'Email is required!').isEmail().withMessage('Invalid email!').isLength({ min: 10 }).withMessage('Email must be at least 10 characters long!'),
-    body('username', 'Username is required!').isLength({ min: 4 }).withMessage('Username must be at least 4 characters long!'),
-    body('password', 'Password is required!').isLength({ min: 3 }).withMessage('Password must be at least 3 characters long!'),
+    body('password', 'Password is required!').isLength({ min: 4 }).withMessage('Password must be at least 4 characters long!'),
     body('rePass', 'Repeat password, please!').custom((value, { req }) => {
         if (value !== req.body.password) {
             throw new Error('Passwords don\'t match!')
@@ -27,7 +28,7 @@ body('email', 'Email is required!').isEmail().withMessage('Invalid email!').isLe
                 throw new Error(Object.values(errors).map(e=>e.msg).join('\n'))
             }
             console.log(errors);
-            await req.auth.register( req.body.email.trim(), req.body.username.trim(), req.body.password.trim());
+            await req.auth.register( req.body.firstName.trim(), req.body.lastName.trim(), req.body.email.trim(), req.body.password.trim());
             console.log(req.auth);
             res.redirect('/');
         } catch (err) {
@@ -35,8 +36,10 @@ body('email', 'Email is required!').isEmail().withMessage('Invalid email!').isLe
             const ctx = {
                 errors: err.message.split('\n'),
                 userData: {
-                    username: req.body.username,
-                    // email: req.body.email
+                    //username: req.body.username,
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
+                    email: req.body.email
                 }
             }
 
