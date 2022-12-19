@@ -5,7 +5,8 @@ async function createUser(firstName, lastName, email, hashedPassword){
         firstName,
         lastName,
         email,
-        hashedPassword
+        hashedPassword,
+        myPosts: []
     })
 
     await user.save();
