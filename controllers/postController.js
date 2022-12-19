@@ -63,8 +63,8 @@ router.get('/details/:id', async (req, res) => {
         post.hasUser = Boolean(req.user);
         post.isAuthor = req.user && req.user._id == post.author;
         post.voted = req.user && post.votes.find(x => x._id == req.user._id)
-        post.plus = req.user && post.votesPlus.find(x => x._id == req.user._id)
-        post.minus = req.user && post.votesMinus.find(x => x._id == req.user._id)
+        post.plus = req.user && post.votesPlus && post.votesPlus.find(x => x._id == req.user._id)
+        post.minus = req.user && post.votesMinus && post.votesMinus.find(x => x._id == req.user._id)
         res.render('details', { post })
 
     } catch (err) {
@@ -78,16 +78,16 @@ router.get('/404', (req, res) => {
     res.render('404')
 })
 
-router.get('/edit/:id', isUser(), async(req, res)=>{
+router.get('/edit/:id', isUser(), async (req, res) => {
     const post = await req.storage.getPostById(req.params.id);
-    res.render('edit', {post})
+    res.render('edit', { post })
 })
-router.post('/edit/:id', isUser(), async(req, res)=>{
+router.post('/edit/:id', isUser(), async (req, res) => {
     try {
 
-        const post  = await req.storage.getPostById(req.params.id);
-        if(post.author != req.user._id){
-            throw new Error ('You cannot edit a post you have not created!')
+        const post = await req.storage.getPostById(req.params.id);
+        if (post.author != req.user._id) {
+            throw new Error('You cannot edit a post you have not created!')
         }
 
         await req.storage.editPost(req.params.id, req.body)
@@ -102,7 +102,7 @@ router.post('/edit/:id', isUser(), async(req, res)=>{
 
         const ctx = {
             errors,
-           post: {
+            post: {
                 _id: req.params.id,//tuk da ne zabravq pri edit post da dobavq id to na hotela
                 title: req.body.title,
                 keyWord: req.body.keyWord,
@@ -116,4 +116,21 @@ router.post('/edit/:id', isUser(), async(req, res)=>{
         res.render('edit', ctx)
     }
 })
+
+
+router.get('/delete/:id', isUser(), async (req, res) => {
+    try {
+        const post = await req.storage.getPostById(req.params.id);
+        if (post.author != req.user._id) {
+            throw new Error('You cannot delete a post you have not created!')
+        }
+
+        await req.storage.deletePost(req.params.id)
+        res.redirect('/posts/catalog')
+    } catch (err) {
+        console.log(err.message);
+        res.redirect('/posts/404')
+    }
+})
+
 module.exports = router;
