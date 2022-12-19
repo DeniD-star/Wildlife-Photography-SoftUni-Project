@@ -17,8 +17,21 @@ async function getPostById(id){
     const post = await Post.findById(id).lean();
     return post;
 }
+
+async function editPost(postId, newData){
+    const post = await Post.findById(postId);
+    post.title=newData.title,
+    post.keyWord=newData.keyWord,
+    post.location= newData.location,
+    post.date= newData.date,
+    post.imageUrl= newData.imageUrl,
+    post.description= newData.description
+
+    return post.save()
+}
 module.exports = {
     createPost,
     getAllPosts,
-    getPostById
+    getPostById,
+    editPost
 }
